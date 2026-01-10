@@ -90,6 +90,21 @@ pnpm db:push    # 推送数据库 schema 更改
 pnpm db:studio  # 打开 Prisma Studio 可视化管理数据库
 ```
 
+## 🚀 部署到 Vercel
+
+本项目已配置好自动部署到 Vercel：
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fheggria%2FSkyloft)
+
+### 快速部署步骤
+
+1. 点击上方按钮一键部署
+2. 在 Vercel 中创建 PostgreSQL 数据库
+3. 配置环境变量（自动从数据库获取）
+4. 部署完成后运行 `npx prisma db push` 初始化数据库
+
+详细部署指南请查看 [DEPLOYMENT.md](./DEPLOYMENT.md)
+
 ## 🎯 功能规划
 
 ### ✅ 已完成
@@ -97,12 +112,15 @@ pnpm db:studio  # 打开 Prisma Studio 可视化管理数据库
 - [x] 基础地图展示和交互
 - [x] 地点标注功能
 - [x] 自动地理编码（获取地点名称）
-- [x] 数据库模型设计
+- [x] 数据库模型设计和 API 实现
+- [x] 数据持久化（后端 API + Prisma）
+- [x] 地点列表展示和删除功能
 - [x] 响应式布局
+- [x] Vercel 自动部署配置
 
 ### 🚧 开发中
 - [ ] 用户认证系统（NextAuth.js）
-- [ ] 地点详情编辑
+- [ ] 地点详情编辑功能
 - [ ] 照片上传和展示
 - [ ] 地点搜索功能
 

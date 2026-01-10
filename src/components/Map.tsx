@@ -14,18 +14,19 @@ L.Icon.Default.mergeOptions({
 });
 
 interface Location {
-  id?: string;
+  id: string;
   name: string;
   lat: number;
   lng: number;
+  country?: string;
+  city?: string;
   date?: string;
   notes?: string;
-  photos?: string[];
 }
 
 interface MapComponentProps {
   locations: Location[];
-  onAddLocation: (locations: Location[]) => void;
+  onAddLocation: (location: Omit<Location, "id">) => void;
 }
 
 function AddMarkerOnClick({ onAdd }: { onAdd: (lat: number, lng: number) => void }) {
@@ -58,28 +59,34 @@ export default function MapComponent({ locations, onAddLocation }: MapComponentP
                    data.address?.country ||
                    "未知地点";
 
-      const newLocation: Location = {
-        id: Date.now().toString(),
+      const city = data.address?.city ||
+                   data.address?.town ||
+                   data.address?.village;
+
+      const country = data.address?.country;
+
+      const newLocation = {
         name,
         lat,
         lng,
-        date: new Date().toISOString().split("T")[0],
+        city,
+        country,
+        date: new Date().toISOString(),
       };
 
-      onAddLocation([...locations, newLocation]);
+      onAddLocation(newLocation);
     } catch (error) {
       console.error("获取地点信息失败:", error);
 
       // 如果 API 失败，使用坐标作为名称
-      const newLocation: Location = {
-        id: Date.now().toString(),
+      const newLocation = {
         name: `位置 (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
         lat,
         lng,
-        date: new Date().toISOString().split("T")[0],
+        date: new Date().toISOString(),
       };
 
-      onAddLocation([...locations, newLocation]);
+      onAddLocation(newLocation);
     }
   };
 

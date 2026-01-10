@@ -1,0 +1,189 @@
+# Vercel 部署指南
+
+本文档介绍如何将 Travel Map 应用部署到 Vercel。
+
+## 前置要求
+
+1. GitHub 账号
+2. Vercel 账号（可使用 GitHub 登录）
+3. 本项目已推送到 GitHub 仓库
+
+## 部署步骤
+
+### 1. 导入项目到 Vercel
+
+1. 访问 [Vercel Dashboard](https://vercel.com/dashboard)
+2. 点击 "Add New..." → "Project"
+3. 选择你的 GitHub 仓库 `heggria/Skyloft`
+4. Vercel 会自动检测到这是一个 Next.js 项目
+
+### 2. 配置数据库
+
+#### 方式一：使用 Vercel Postgres（推荐）
+
+1. 在 Vercel 项目设置中，进入 "Storage" 标签
+2. 点击 "Create Database" → 选择 "Postgres"
+3. 为数据库命名（例如：`travel-map-db`）
+4. 点击 "Create"
+5. Vercel 会自动添加以下环境变量到你的项目：
+   - `POSTGRES_URL`
+   - `POSTGRES_PRISMA_URL`
+   - `POSTGRES_URL_NON_POOLING`
+
+6. 在项目环境变量中手动添加：
+   ```
+   DATABASE_URL=${POSTGRES_PRISMA_URL}
+   DIRECT_URL=${POSTGRES_URL_NON_POOLING}
+   ```
+
+#### 方式二：使用外部 PostgreSQL 数据库
+
+如果你已有 PostgreSQL 数据库（如 Supabase、Railway、Neon 等），在 Vercel 环境变量中添加：
+
+```
+DATABASE_URL=postgresql://user:password@host:5432/database?sslmode=require
+DIRECT_URL=postgresql://user:password@host:5432/database?sslmode=require
+```
+
+### 3. 配置其他环境变量
+
+在 Vercel 项目设置的 "Environment Variables" 中添加：
+
+```bash
+# NextAuth.js（如果启用认证）
+NEXTAUTH_URL=https://your-app.vercel.app
+NEXTAUTH_SECRET=your-random-secret-here
+```
+
+生成 NEXTAUTH_SECRET：
+```bash
+openssl rand -base64 32
+```
+
+### 4. 初始化数据库
+
+部署后，需要初始化数据库表结构：
+
+1. 在本地克隆并配置好数据库连接
+2. 运行数据库推送命令：
+   ```bash
+   npx prisma db push
+   ```
+
+或者使用 Vercel CLI：
+```bash
+vercel env pull .env.local  # 拉取环境变量
+npx prisma db push          # 推送数据库 schema
+```
+
+### 5. 部署
+
+1. 点击 "Deploy" 按钮
+2. 等待构建和部署完成
+3. 访问分配的 URL 查看应用
+
+## 自动部署
+
+配置完成后，每次推送代码到 GitHub 主分支，Vercel 会自动触发部署：
+
+- ✅ 自动安装依赖
+- ✅ 自动生成 Prisma Client（通过 `postinstall` 脚本）
+- ✅ 自动构建 Next.js 应用
+- ✅ 自动部署到全球 CDN
+
+## 环境配置
+
+### 开发环境
+
+开发环境使用 `.env` 文件（不要提交到 Git）：
+
+```bash
+# 本地开发可以使用 SQLite（更简单）
+DATABASE_URL="file:./dev.db"
+DIRECT_URL="file:./dev.db"
+
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="development-secret"
+```
+
+### 生产环境
+
+生产环境在 Vercel Dashboard 配置环境变量（使用 PostgreSQL）。
+
+## 常见问题
+
+### 1. Prisma Client 未生成
+
+确保 `package.json` 中包含：
+```json
+{
+  "scripts": {
+    "postinstall": "prisma generate",
+    "build": "prisma generate && next build"
+  }
+}
+```
+
+### 2. 数据库连接失败
+
+- 检查环境变量是否正确配置
+- 确保数据库允许来自 Vercel IP 的连接
+- 确认连接字符串包含 `?sslmode=require`
+
+### 3. 构建超时
+
+如果构建时间过长：
+- 检查依赖包大小
+- 考虑使用 Vercel Pro 计划（更长的构建时间限制）
+
+## 性能优化
+
+1. **启用 Edge Runtime**（可选）
+   - Next.js 15 支持 Edge Runtime
+   - 更快的响应速度
+
+2. **配置 ISR（增量静态再生）**
+   - 对于不常变化的页面使用 ISR
+   - 减少服务器负载
+
+3. **图片优化**
+   - 使用 Next.js Image 组件
+   - 自动优化和响应式图片
+
+## 监控和日志
+
+1. 在 Vercel Dashboard 查看：
+   - 部署日志
+   - 运行时日志
+   - 性能分析
+   - 错误追踪
+
+2. 集成第三方监控（可选）：
+   - Sentry（错误追踪）
+   - Vercel Analytics（性能分析）
+
+## 数据库管理
+
+使用 Prisma Studio 远程管理数据库：
+
+```bash
+# 1. 拉取生产环境变量
+vercel env pull .env.production
+
+# 2. 使用生产环境变量启动 Prisma Studio
+dotenv -e .env.production -- npx prisma studio
+```
+
+## 回滚
+
+如果新部署出现问题：
+
+1. 在 Vercel Dashboard 的 "Deployments" 标签
+2. 找到上一个正常的部署
+3. 点击 "Promote to Production"
+
+## 更多资源
+
+- [Vercel 文档](https://vercel.com/docs)
+- [Next.js 部署文档](https://nextjs.org/docs/deployment)
+- [Prisma 部署指南](https://www.prisma.io/docs/guides/deployment/deployment-guides/deploying-to-vercel)
