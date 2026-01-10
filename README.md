@@ -7,6 +7,15 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)
 
+## 🚀 快速部署
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/heggria/Skyloft)
+
+**部署指南：**
+- 📖 [5 分钟快速部署](./QUICKSTART.md) - 最简单的部署方式
+- 📚 [详细部署指南](./DEPLOY_GUIDE.md) - 完整的步骤说明
+- 🔧 [Vercel 配置文档](./DEPLOYMENT.md) - 深入的配置选项
+
 ## ✨ 特性
 
 - 🗺️ **交互式世界地图** - 基于 Leaflet 的高性能地图组件
