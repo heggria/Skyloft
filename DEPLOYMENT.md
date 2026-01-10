@@ -45,14 +45,45 @@ DATABASE_URL=postgresql://user:password@host:5432/database?sslmode=require
 DIRECT_URL=postgresql://user:password@host:5432/database?sslmode=require
 ```
 
-### 3. 配置其他环境变量
+### 3. 配置 OAuth 认证
+
+#### 3.1 GitHub OAuth App
+
+1. 访问 [GitHub Developer Settings](https://github.com/settings/developers)
+2. 点击 "New OAuth App"
+3. 填写信息：
+   - Application name: `Skyloft Travel Map`
+   - Homepage URL: `https://your-app.vercel.app`
+   - Authorization callback URL: `https://your-app.vercel.app/api/auth/callback/github`
+4. 创建后，复制 Client ID 和生成 Client Secret
+
+#### 3.2 Google OAuth 2.0
+
+1. 访问 [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. 创建新项目或选择现有项目
+3. 启用 "Google+ API"
+4. 创建 OAuth 2.0 Client ID：
+   - Application type: Web application
+   - Authorized JavaScript origins: `https://your-app.vercel.app`
+   - Authorized redirect URIs: `https://your-app.vercel.app/api/auth/callback/google`
+5. 复制 Client ID 和 Client Secret
+
+#### 3.3 配置环境变量
 
 在 Vercel 项目设置的 "Environment Variables" 中添加：
 
 ```bash
-# NextAuth.js（如果启用认证）
+# NextAuth.js
 NEXTAUTH_URL=https://your-app.vercel.app
 NEXTAUTH_SECRET=your-random-secret-here
+
+# GitHub OAuth
+GITHUB_ID=your-github-oauth-app-id
+GITHUB_SECRET=your-github-oauth-secret
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
 ```
 
 生成 NEXTAUTH_SECRET：
