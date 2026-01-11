@@ -128,19 +128,56 @@ openssl rand -base64 32
 
 ### 4. 初始化数据库
 
-部署后，需要初始化数据库表结构：
+⚠️ **重要：** 部署后必须初始化数据库表结构，否则应用会报错 `The table 'public.Location' does not exist`
 
-1. 在本地克隆并配置好数据库连接
-2. 运行数据库推送命令：
+#### 方法 A：使用 Vercel CLI（推荐）
+
+```bash
+# 1. 登录 Vercel
+npx vercel login
+
+# 2. 链接项目
+npx vercel link
+# 在交互提示中选择你的项目（skyloft-iota）
+
+# 3. 拉取生产环境变量
+npx vercel env pull .env.local
+
+# 4. 初始化数据库（创建所有表）
+npx prisma db push
+```
+
+#### 方法 B：手动配置
+
+如果你不想使用 Vercel CLI：
+
+1. 在 Vercel Dashboard 复制数据库连接字符串：
+   - Settings → Environment Variables
+   - 复制 `POSTGRES_PRISMA_URL` 的值
+   - 复制 `POSTGRES_URL_NON_POOLING` 的值
+
+2. 创建本地 `.env.local` 文件：
+   ```bash
+   DATABASE_URL="<粘贴 POSTGRES_PRISMA_URL 的值>"
+   DIRECT_URL="<粘贴 POSTGRES_URL_NON_POOLING 的值>"
+   ```
+
+3. 运行数据库推送：
    ```bash
    npx prisma db push
    ```
 
-或者使用 Vercel CLI：
-```bash
-vercel env pull .env.local  # 拉取环境变量
-npx prisma db push          # 推送数据库 schema
+#### 验证数据库初始化成功
+
+初始化后，你应该看到类似输出：
 ```
+✔ Generated Prisma Client
+✔ Database synchronized with schema
+
+Your database is now in sync with your Prisma schema.
+```
+
+访问你的应用，刷新页面，应该可以正常使用了。
 
 ### 5. 部署
 

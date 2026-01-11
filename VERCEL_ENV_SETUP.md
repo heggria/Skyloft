@@ -40,9 +40,44 @@ Error: Environment variable not found: DATABASE_URL
 4. 点击右侧的 "..." 菜单
 5. 选择 **Redeploy**
 
-### 步骤 4：验证
+### 步骤 4：初始化数据库表结构
 
-等待重新部署完成后，访问你的应用。数据库操作应该可以正常工作了。
+重新部署完成后，你还需要创建数据库表：
+
+#### 选项 A：使用 Vercel CLI（推荐）
+
+```bash
+# 在本地项目目录执行：
+
+# 1. 登录 Vercel
+npx vercel login
+
+# 2. 链接项目
+npx vercel link
+
+# 3. 拉取环境变量
+npx vercel env pull .env.local
+
+# 4. 初始化数据库
+npx prisma db push
+```
+
+#### 选项 B：手动配置
+
+1. 在 Vercel Dashboard 找到并复制 `POSTGRES_PRISMA_URL` 和 `POSTGRES_URL_NON_POOLING` 的值
+2. 创建本地 `.env.local` 文件：
+   ```
+   DATABASE_URL="<POSTGRES_PRISMA_URL 的值>"
+   DIRECT_URL="<POSTGRES_URL_NON_POOLING 的值>"
+   ```
+3. 运行：
+   ```bash
+   npx prisma db push
+   ```
+
+### 步骤 5：验证
+
+访问你的应用，刷新页面。数据库操作应该可以正常工作了。
 
 ---
 
@@ -109,7 +144,18 @@ GOOGLE_CLIENT_SECRET = <你的 Google Client Secret>
 
 ## 🔍 常见错误
 
-### 错误 1：环境变量语法错误
+### 错误 1：数据库表不存在
+
+**错误信息：**
+```
+The table 'public.Location' does not exist in the current database
+```
+
+**原因：** 数据库连接成功了，但表结构还没创建。
+
+**解决：** 运行 `npx prisma db push` 初始化数据库（参考上面的步骤 4）
+
+### 错误 2：环境变量语法错误
 
 ❌ **错误写法：**
 ```
