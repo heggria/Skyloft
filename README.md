@@ -12,9 +12,8 @@
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/heggria/Skyloft)
 
 **部署指南：**
-- 📖 [5 分钟快速部署](./QUICKSTART.md) - 最简单的部署方式
-- 📚 [详细部署指南](./DEPLOY_GUIDE.md) - 完整的步骤说明
-- 🔧 [Vercel 配置文档](./DEPLOYMENT.md) - 深入的配置选项
+- 🚨 [环境变量快速配置](./VERCEL_ENV_SETUP.md) - 解决 DATABASE_URL 错误
+- 🔧 [Vercel 完整部署指南](./DEPLOYMENT.md) - 详细的部署步骤
 
 ## ✨ 特性
 
@@ -113,10 +112,13 @@ pnpm db:studio  # 打开 Prisma Studio 可视化管理数据库
 
 1. 点击上方按钮一键部署
 2. 在 Vercel 中创建 PostgreSQL 数据库
-3. 配置环境变量（自动从数据库获取）
-4. 部署完成后运行 `npx prisma db push` 初始化数据库
+3. **重要：** 按照 [环境变量配置指南](./VERCEL_ENV_SETUP.md) 设置 `DATABASE_URL` 和 `DIRECT_URL`
+4. 配置 OAuth 认证（GitHub 和 Google）
+5. 重新部署项目
 
-详细部署指南请查看 [DEPLOYMENT.md](./DEPLOYMENT.md)
+**遇到问题？**
+- 🚨 DATABASE_URL 错误：查看 [环境变量快速配置](./VERCEL_ENV_SETUP.md)
+- 📚 完整部署流程：查看 [详细部署指南](./DEPLOYMENT.md)
 
 ## 🎯 功能规划
 
