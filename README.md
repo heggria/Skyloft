@@ -14,6 +14,7 @@
 **部署指南：**
 - 🚨 [环境变量快速配置](./VERCEL_ENV_SETUP.md) - 解决 DATABASE_URL 错误
 - 🔧 [Vercel 完整部署指南](./DEPLOYMENT.md) - 详细的部署步骤
+- 🔄 [数据库迁移配置](./MIGRATION_SETUP.md) - 自动化数据库部署
 
 ## ✨ 特性
 

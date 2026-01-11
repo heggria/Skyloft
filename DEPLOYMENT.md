@@ -130,6 +130,8 @@ openssl rand -base64 32
 
 ⚠️ **重要：** 部署后必须初始化数据库表结构，否则应用会报错 `The table 'public.Location' does not exist`
 
+> 💡 **高级选项：** 想要自动化数据库部署？查看 [数据库迁移配置指南](./MIGRATION_SETUP.md) 了解如何配置自动迁移。
+
 #### 方法 A：使用 Vercel CLI（推荐）
 
 ```bash
