@@ -7,16 +7,27 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)
 
+## 🚀 快速部署
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/heggria/Skyloft)
+
+**部署指南：**
+- 📖 [5 分钟快速部署](./QUICKSTART.md) - 最简单的部署方式
+- 📚 [详细部署指南](./DEPLOY_GUIDE.md) - 完整的步骤说明
+- 🔧 [Vercel 配置文档](./DEPLOYMENT.md) - 深入的配置选项
+
 ## ✨ 特性
 
 - 🗺️ **交互式世界地图** - 基于 Leaflet 的高性能地图组件
 - 📍 **智能标注** - 点击地图即可添加旅行地点，自动获取地理信息
-- 📊 **统计面板** - 实时显示旅行足迹统计
-- 🎨 **现代化UI** - 使用 Tailwind CSS 和 shadcn/ui 构建
+- 📊 **统计面板** - 实时显示旅行足迹统计（地点、国家、城市）
+- 🎨 **现代化UI** - 参考 Claude 设计风格，简洁优雅
 - 📱 **响应式设计** - 完美支持桌面和移动设备
-- 🔐 **用户认证** - 基于 NextAuth.js（待实现）
-- 📸 **照片管理** - 为每个地点添加照片和笔记（待实现）
-- 📅 **时间轴视图** - 按时间查看旅行历史（待实现）
+- 🔐 **用户认证** - 支持 GitHub 和 Google OAuth 登录
+- 💾 **数据持久化** - 基于 PostgreSQL + Prisma ORM
+- 🚀 **一键部署** - 支持 Vercel 自动部署
+- ⚡ **实时同步** - 所有操作即时保存到云端
+- 🎯 **智能错误处理** - 完善的加载状态和错误提示
 
 ## 🚀 技术栈
 
@@ -30,7 +41,9 @@
 ### 后端
 - **Next.js API Routes** - 服务端 API
 - **Prisma** - 下一代 ORM
-- **SQLite** - 开发环境数据库（生产环境可切换到 PostgreSQL）
+- **PostgreSQL** - 生产数据库
+- **NextAuth.js v5** - 身份认证解决方案
+- **OAuth 2.0** - GitHub & Google 登录
 
 ### 状态管理 & 工具
 - **Zustand** - 轻量级状态管理
@@ -117,12 +130,16 @@ pnpm db:studio  # 打开 Prisma Studio 可视化管理数据库
 - [x] 地点列表展示和删除功能
 - [x] 响应式布局
 - [x] Vercel 自动部署配置
+- [x] 用户认证系统（GitHub & Google OAuth）
+- [x] 现代化 UI 设计（参考 Claude 风格）
+- [x] 完善的加载状态和错误处理
+- [x] 空状态和边界情况处理
+- [x] 统计面板（地点、国家、城市数量）
 
 ### 🚧 开发中
-- [ ] 用户认证系统（NextAuth.js）
 - [ ] 地点详情编辑功能
 - [ ] 照片上传和展示
-- [ ] 地点搜索功能
+- [ ] 地点搜索和筛选功能
 
 ### 📋 计划中
 - [ ] 统计面板（国家/城市数量、覆盖率）

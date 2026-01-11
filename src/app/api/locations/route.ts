@@ -1,33 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
-// 默认演示用户 ID
-const DEMO_USER_ID = "demo-user";
-
-// 确保演示用户存在
-async function ensureDemoUser() {
-  const user = await prisma.user.findUnique({
-    where: { id: DEMO_USER_ID },
-  });
-
-  if (!user) {
-    await prisma.user.create({
-      data: {
-        id: DEMO_USER_ID,
-        name: "Demo User",
-        email: "demo@example.com",
-      },
-    });
-  }
-}
+import { auth } from "@/lib/auth";
 
 // GET - 获取所有地点
 export async function GET() {
   try {
-    await ensureDemoUser();
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "未授权" },
+        { status: 401 }
+      );
+    }
 
     const locations = await prisma.location.findMany({
-      where: { userId: DEMO_USER_ID },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       include: {
         photos: true,
@@ -47,7 +35,14 @@ export async function GET() {
 // POST - 创建新地点
 export async function POST(request: NextRequest) {
   try {
-    await ensureDemoUser();
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "未授权" },
+        { status: 401 }
+      );
+    }
 
     const body = await request.json();
     const { name, lat, lng, country, city, date, notes } = body;
@@ -68,7 +63,7 @@ export async function POST(request: NextRequest) {
         city,
         date: date ? new Date(date) : null,
         notes,
-        userId: DEMO_USER_ID,
+        userId: session.user.id,
       },
       include: {
         photos: true,
@@ -88,6 +83,15 @@ export async function POST(request: NextRequest) {
 // DELETE - 删除地点
 export async function DELETE(request: NextRequest) {
   try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "未授权" },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -95,6 +99,26 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         { error: "缺少地点 ID" },
         { status: 400 }
+      );
+    }
+
+    // 验证地点属于当前用户
+    const location = await prisma.location.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+
+    if (!location) {
+      return NextResponse.json(
+        { error: "地点不存在" },
+        { status: 404 }
+      );
+    }
+
+    if (location.userId !== session.user.id) {
+      return NextResponse.json(
+        { error: "无权删除此地点" },
+        { status: 403 }
       );
     }
 
