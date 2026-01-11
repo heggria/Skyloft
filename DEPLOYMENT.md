@@ -2,6 +2,25 @@
 
 本文档介绍如何将 Travel Map 应用部署到 Vercel。
 
+## ⚠️ 快速修复：DATABASE_URL 错误
+
+如果你遇到 `Environment variable not found: DATABASE_URL` 错误，请按以下步骤操作：
+
+1. 登录 [Vercel Dashboard](https://vercel.com/dashboard)
+2. 进入你的项目 → Settings → Environment Variables
+3. 确保已创建 Vercel Postgres 数据库（如果没有，请先创建）
+4. **添加以下两个环境变量**（重要！）：
+   ```
+   DATABASE_URL = ${POSTGRES_PRISMA_URL}
+   DIRECT_URL = ${POSTGRES_URL_NON_POOLING}
+   ```
+   注意：使用 `${...}` 语法引用 Vercel 自动生成的变量
+5. 保存后，重新部署项目（Deployments → 最新部署 → Redeploy）
+
+详细步骤请参考下方的完整部署指南。
+
+---
+
 ## 前置要求
 
 1. GitHub 账号
@@ -30,10 +49,26 @@
    - `POSTGRES_PRISMA_URL`
    - `POSTGRES_URL_NON_POOLING`
 
-6. 在项目环境变量中手动添加：
+6. **🔴 重要：手动添加 Prisma 所需的环境变量**
+
+   Vercel 自动生成的变量名与 Prisma 要求的不同，你需要手动创建映射：
+
+   在 Settings → Environment Variables 中点击 "Add New" 添加：
+
+   | Key | Value |
+   |-----|-------|
+   | `DATABASE_URL` | `${POSTGRES_PRISMA_URL}` |
+   | `DIRECT_URL` | `${POSTGRES_URL_NON_POOLING}` |
+
+   注意事项：
+   - ✅ 使用 `${...}` 语法引用其他环境变量
+   - ✅ 这两个变量对于所有环境（Production, Preview, Development）都要添加
+   - ❌ 不要直接复制数据库连接字符串，使用变量引用
+
+   完成后应该看到类似这样的配置：
    ```
-   DATABASE_URL=${POSTGRES_PRISMA_URL}
-   DIRECT_URL=${POSTGRES_URL_NON_POOLING}
+   DATABASE_URL = ${POSTGRES_PRISMA_URL}
+   DIRECT_URL = ${POSTGRES_URL_NON_POOLING}
    ```
 
 #### 方式二：使用外部 PostgreSQL 数据库
@@ -143,7 +178,31 @@ NEXTAUTH_SECRET="development-secret"
 
 ## 常见问题
 
-### 1. Prisma Client 未生成
+### 1. DATABASE_URL 环境变量未找到
+
+**错误信息：**
+```
+Error [PrismaClientInitializationError]: Invalid `prisma.xxx()` invocation:
+error: Environment variable not found: DATABASE_URL.
+```
+
+**原因：** Vercel Postgres 自动生成的变量名（`POSTGRES_PRISMA_URL`）与 Prisma 期望的变量名（`DATABASE_URL`）不匹配。
+
+**解决方案：**
+
+1. 进入 Vercel Dashboard → 你的项目 → Settings → Environment Variables
+2. 确认存在 `POSTGRES_PRISMA_URL` 和 `POSTGRES_URL_NON_POOLING` 变量
+3. 添加以下两个环境变量：
+   ```
+   DATABASE_URL = ${POSTGRES_PRISMA_URL}
+   DIRECT_URL = ${POSTGRES_URL_NON_POOLING}
+   ```
+4. 选择应用范围：Production, Preview, Development（全选）
+5. 保存后重新部署项目
+
+**验证：** 部署成功后，访问你的应用，数据库操作应该正常工作。
+
+### 2. Prisma Client 未生成
 
 确保 `package.json` 中包含：
 ```json
@@ -155,13 +214,14 @@ NEXTAUTH_SECRET="development-secret"
 }
 ```
 
-### 2. 数据库连接失败
+### 3. 数据库连接失败
 
 - 检查环境变量是否正确配置
+- 确保 `DATABASE_URL` 和 `DIRECT_URL` 已正确设置
 - 确保数据库允许来自 Vercel IP 的连接
 - 确认连接字符串包含 `?sslmode=require`
 
-### 3. 构建超时
+### 4. 构建超时
 
 如果构建时间过长：
 - 检查依赖包大小
